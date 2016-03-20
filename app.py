@@ -1,11 +1,5 @@
 import serial, time, glob
 
-ser = serial.Serial()
-ser.port = '/dev/tty.usbmodem14111'
-ser.baudrate = 115200
-ser.timeout = 1
-
-ser.open()
 
 def _parse_cpbr_row(s):
     """Parses a cpbr row data into a dictionary."""
@@ -27,22 +21,29 @@ def _parse_cpbr(s):
     return _numbers
 
 
-def sim_msisdn():
-	ser.write('AT+CPBS=SM\r')
+def sim_msisdn(str_port):
+    ser = serial.Serial()
+    ser.port = str_port
+    ser.baudrate = 115200
+    ser.timeout = 1
+    
+    ser.open()
+    ser.write('AT+CPBS=SM\r')
 
-	time.sleep(0.5)
-	ser.write('AT+CPBR=1,100\r')
-
-
-
-	time.sleep(0.5)
-
-	res = ser.readall()
-	numbers = _parse_cpbr(res)
-
-	for num in numbers:
-	    if num['name'] == 'My Number':
-	        return num['number']
+    time.sleep(0.5)
+    ser.write('AT+CPBR=1,100\r')
 
 
-print sim_msisdn()
+
+    time.sleep(0.5)
+    res = ser.readall()
+    numbers = _parse_cpbr(res)
+
+    for num in numbers:
+        if num['name'] == 'My Number':
+	    return num['number']
+
+
+# print sim_msisdn()
+for f in glob.glob('/dev/tty.usb*'):
+    print sim_msisdn(f);
