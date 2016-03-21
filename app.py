@@ -222,6 +222,26 @@ def balance(str_port):
 
     return res
 
+def send_sms(str_port, recipient, message):
+    ser = serial.Serial()
+    ser.port = str_port
+    ser.baudrate = 115200
+    ser.timeout = 1
+    
+    ser.open()
+
+    time.sleep(0.5)
+    ser.write('AT+CMGF=1\r')
+    time.sleep(0.5)
+    ser.write('AT+CMGS="%s"\r' % recipient)
+    time.sleep(0.5)
+    ser.write('%s\r' % message)
+    ser.write(chr(26))
+
+    res = ser.readall()
+
+    return res
+
 @app.route('/', methods=['GET'])
 def index():
     # for f in msisdn:
@@ -236,7 +256,20 @@ def index():
 
 # print sim_msisdn('/dev/tty.usbmodem14121')
 # delete_sms('/dev/tty.usbmodem14147')
-print read_inbox('/dev/tty.usbmodem14141')
+sms = read_inbox('/dev/tty.usbmodem14141')
+sms_row = sms.split('+CMGL: ')
+unique_sender = []
+
+for x in sms_row:
+    if 'BOTO' in x:
+        # print x
+        # Get sender
+        sender = x.split('"REC READ",')[1].split(',,')[0].replace('"','')
+
+        if sender not in unique_sender:
+            unique_sender.append(sender)
+
+print unique_sender
 # print balance('/dev/tty.usbmodem14141')
 
 
@@ -248,6 +281,13 @@ print read_inbox('/dev/tty.usbmodem14141')
 # for i in msisdn:
     # print sim_msisdn(i)
     # print read_inbox(i['val'])
+
+# Send SMS
+recipient = ['09159422627']
+
+# for j in recipient:
+#     print send_sms('/dev/tty.usbmodem14141', j, 'sample msg')
+
 
 # if __name__ == '__main__':
 #     app.run(
