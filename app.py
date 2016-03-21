@@ -244,52 +244,65 @@ def send_sms(str_port, recipient, message):
 
 @app.route('/', methods=['GET'])
 def index():
-    # for f in msisdn:
-    #     print '===================================='
-    #     print f['key']
-    #     print '===================================='
+    sms = read_inbox('/dev/tty.usbmodem14141')
+    sms_row = sms.split('+CMGL: ')
+    unique_sender = []
+    vote = {
+        'ONE': 0,
+        'TWO': 0,
+        'THREE': 0,
+        'FOUR': 0,
+        'FIVE': 0,
+    }
 
-        # read_inbox(f['val'])
-    # read_inbox('/dev/tty.usbmodem14145')
+    sms_desc = []
+
+    for x in sms_row:
+        if 'BOTO' in x:
+            sms_desc.append(x.split('\r'))
+            # Get sender
+    #         sender = x.split('"REC READ",')[1].split(',,')[0].replace('"','')
+
+    #         if sender not in unique_sender:
+    #             unique_sender.append(sender)
+    #             print sender
+                
+    #             if 'ONE' in x.split('BOTO')[1]:
+    #                 vote['ONE'] += 1
+    #             elif 'TWO' in x.split('BOTO')[1]:
+    #                 vote['TWO'] += 1
+    #             elif 'THREE' in x.split('BOTO')[1]:
+    #                 vote['THREE'] += 1
+    #             elif 'FOUR' in x.split('BOTO')[1]:
+    #                 vote['FOUR'] += 1
+    #             elif 'FIVE' in x.split('BOTO')[1]:
+    #                 vote['FIVE'] += 1
+    
+    for u in reversed(sms_desc):
+        print u
+        sender = u[0].split('"REC READ","')[1].split(',,')[0].replace('"','')
+
+        if sender not in unique_sender:
+            unique_sender.append(sender)
+
+            if 'ONE' in u[1]:
+                vote['ONE'] += 1
+            elif 'TWO' in u[1]:
+                vote['TWO'] += 1
+            elif 'THREE' in u[1]:
+                vote['THREE'] += 1
+            elif 'FOUR' in u[1]:
+                vote['FOUR'] += 1
+            elif 'FIVE' in u[1]:
+                vote['FIVE'] += 1
+
+    print unique_sender
+    print vote
 
     return render_template('index.html')
 
 # print sim_msisdn('/dev/tty.usbmodem14121')
 # delete_sms('/dev/tty.usbmodem14147')
-sms = read_inbox('/dev/tty.usbmodem14141')
-sms_row = sms.split('+CMGL: ')
-unique_sender = []
-vote = {
-    'ONE': 0,
-    'TWO': 0,
-    'THREE': 0,
-    'FOUR': 0,
-    'FIVE': 0,
-}
-
-for x in sms_row:
-    if 'BOTO' in x:
-        # print x
-        # Get sender
-        sender = x.split('"REC READ",')[1].split(',,')[0].replace('"','')
-
-        if sender not in unique_sender:
-            unique_sender.append(sender)
-            print sender
-            
-            if 'ONE' in x.split('BOTO')[1]:
-                vote['ONE'] += 1
-            elif 'TWO' in x.split('BOTO')[1]:
-                vote['TWO'] += 1
-            elif 'THREE' in x.split('BOTO')[1]:
-                vote['THREE'] += 1
-            elif 'FOUR' in x.split('BOTO')[1]:
-                vote['FOUR'] += 1
-            elif 'FIVE' in x.split('BOTO')[1]:
-                vote['FIVE'] += 1
-
-# print unique_sender
-print vote
 # print balance('/dev/tty.usbmodem14141')
 
 
@@ -309,8 +322,8 @@ recipient = ['09159422627']
 #     print send_sms('/dev/tty.usbmodem14141', j, 'sample msg')
 
 
-# if __name__ == '__main__':
-#     app.run(
-#         debug=True,
-#         host='0.0.0.0'
-#     )
+if __name__ == '__main__':
+    app.run(
+        debug=True,
+        host='0.0.0.0'
+    )
