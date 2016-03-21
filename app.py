@@ -259,6 +259,13 @@ def index():
 sms = read_inbox('/dev/tty.usbmodem14141')
 sms_row = sms.split('+CMGL: ')
 unique_sender = []
+vote = {
+    'ONE': 0,
+    'TWO': 0,
+    'THREE': 0,
+    'FOUR': 0,
+    'FIVE': 0,
+}
 
 for x in sms_row:
     if 'BOTO' in x:
@@ -268,8 +275,21 @@ for x in sms_row:
 
         if sender not in unique_sender:
             unique_sender.append(sender)
+            print sender
+            
+            if 'ONE' in x.split('BOTO')[1]:
+                vote['ONE'] += 1
+            elif 'TWO' in x.split('BOTO')[1]:
+                vote['TWO'] += 1
+            elif 'THREE' in x.split('BOTO')[1]:
+                vote['THREE'] += 1
+            elif 'FOUR' in x.split('BOTO')[1]:
+                vote['FOUR'] += 1
+            elif 'FIVE' in x.split('BOTO')[1]:
+                vote['FIVE'] += 1
 
-print unique_sender
+# print unique_sender
+print vote
 # print balance('/dev/tty.usbmodem14141')
 
 
