@@ -125,7 +125,7 @@ def read_inbox(str_port):
     print '===================================='
     print str_port
     print '===================================='
-    print sms
+    return sms
     
 
 def delete_sms(str_port):
@@ -205,10 +205,18 @@ def balance(str_port):
     ser.open()
     time.sleep(0.5)
 
-    bal_type = '222'
-    ser.write(b'AT+CMGS="'+ bal_type +'"\r')
+    # bal_type = '222'
+    # ser.write(b'AT+CMGS="'+ bal_type +'"\r')
+    # time.sleep(0.5)
+    # ser.write('BAL'.encode() + b"\r")
+
     time.sleep(0.5)
-    ser.write('BAL'.encode() + b"\r")
+    ser.write(b'AT+CUSD=1,"*143*4#"\r')
+    time.sleep(0.5)
+
+    time.sleep(0.5)
+    ser.write(chr(26))
+    time.sleep(0.5)
 
     res = ser.readall()
 
@@ -228,7 +236,8 @@ def index():
 
 # print sim_msisdn('/dev/tty.usbmodem14121')
 # delete_sms('/dev/tty.usbmodem14147')
-read_inbox('/dev/tty.usbmodem14141')
+print read_inbox('/dev/tty.usbmodem14141')
+# print balance('/dev/tty.usbmodem14141')
 
 
 
